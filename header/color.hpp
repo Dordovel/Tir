@@ -1,0 +1,14 @@
+#ifndef PROJECT_COLOR_INTERFACE
+#define PROJECT_COLOR_INTERFACE
+
+enum class ColorDef
+{
+	YELLOW,
+	RED,
+	GREEN,
+	BLACK,
+	BLUE,
+	WHITE
+};
+
+#endif //PROJECT_COLOR_INTERFACE
