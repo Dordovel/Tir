@@ -46,6 +46,10 @@ class Sprite : public ISptire
 
         bool intersect(const IStatic& object) const noexcept override;
 
+        bool intersect(const Vector2f&  object) const noexcept override;
+
+        bool intersect(float x, float y) const noexcept override;
+
         explicit Sprite(std::string_view path);
 };
 

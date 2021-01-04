@@ -45,6 +45,14 @@ class Text : public IText
 
 		void set_color(ColorDef color) noexcept override;
 
+        bool intersect(const IStatic* const object) const noexcept override;
+
+        bool intersect(const IStatic& object) const noexcept override;
+
+        bool intersect(const Vector2f&  object) const noexcept override;
+
+        bool intersect(float x, float y) const noexcept override;
+
         explicit Text(std::string_view path);
 };
 

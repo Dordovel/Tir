@@ -8,6 +8,7 @@
 #include "./header/delay.hpp"
 
 #include <cmath>
+#include <iostream>
 
 enum class TYPE
 {
@@ -234,7 +235,7 @@ int main()
 				}
             };
 
-    Delay delay(20.f, functor);
+    Delay delay(30.f, functor);
     if(!delay.is_run())
         delay.run();
 
@@ -264,100 +265,159 @@ int main()
 				}
             };
 
-    Delay cannonDelay(10.0f, cannonFunctor);
+    Delay cannonDelay(20.0f, cannonFunctor);
         cannonDelay.run();
 
 	sf::Event event;
 	sf::Clock clock;
 	float time = 1;
 
+	sf::Time timer = sf::seconds(60 * 2);
+
+	Text timerStat = score;
+
+	bool appIsRun = false;
+
+	Text buttonNew = timerStat;
+	buttonNew.set_text("New");
+	buttonNew.set_position((windowSize.x / 2) , ((windowSize.y / 2) - buttonNew.get_global_bounds().height));
+
+	Text buttonExit = buttonNew;
+	buttonExit.set_text("Exit");
+	buttonExit.set_position((windowSize.x / 2) , ((windowSize.y / 2) + buttonExit.get_global_bounds().height));
+
     while (window.is_open())
-    {
-        time += clock.getElapsedTime().asMilliseconds();
-        clock.restart();
-
-		if(!cannonBall.sprite)
+	{
+		while (window.poll_events())
 		{
-			int rnd = 0 + rand() % 10;
+			event = window.get_event().get_object();
+			if (event.type == sf::Event::Closed)
+				window.close();
 
-			if(rnd != 6)
-			{
-				cannonBall.sprite = &gunDrum.front();
-				cannonBall.type = GunBallType::BALL;
-			}
-			else
-			{
-				cannonBall.sprite = &gunDrum.back();
-				cannonBall.type = GunBallType::BOMB;
-			}
+				if(event.type == sf::Event::MouseButtonPressed)
+				{
+					if(event.mouseButton.button == sf::Mouse::Left)
+					{
+						Vector2f coords = window.map_pixel_to_coord(event.mouseButton.x, event.mouseButton.y);
+						
+						if(buttonNew.intersect(coords))
+						{
+							appIsRun = true;
+						}
 
-			cannonBall.sprite->set_position(10, (windowSize.y - (windowSize.y / 5)));
+						if(buttonExit.intersect(coords))
+						{
+							window.close();
+						}
+					}
+				}
 		}
 
-        cannonDelay.update(time);
-        delay.update(time);
+		while(appIsRun)
+		{
+			time += clock.getElapsedTime().asMilliseconds();
 
-        while (window.poll_events())
-        {
-			event = window.get_event().get_object();
-            if (event.type == sf::Event::Closed)
-                window.close();
+			timer -= clock.getElapsedTime();
+			timerStat.set_text("Time: " + std::to_string(int(timer.asSeconds())) + " sec");
+			timerStat.set_position((windowSize. x - timerStat.get_global_bounds().width) - 20, windowSize. y / 2);
 
-            if(event.type == sf::Event::MouseButtonPressed)
-            {
-                if(event.mouseButton.button == sf::Mouse::Left)
-                {
-                    if(cannonBall.sprite)
-                    {
-                        RectF bound = cannonBall.sprite->get_global_bounds();
-                        RectF boundCannon = cannon.get_global_bounds();
+			clock.restart();
 
-                        Vector2f pos = cannon.get_position();
-                        float angle = (cannon.get_rotation() - 180) + 45;
-                        Vector2f coord = move(angle, pos, Vector2f{boundCannon.height / 2, boundCannon.height / 2});
-
-                        cannonBall.sprite->set_position(coord.x - (bound.width / 2), coord.y - (bound.height / 2));
-
-                        gun.angle = cannon.get_rotation();
-						gun.ball = &cannonBall;
-                        cannonDelay.run();
-                    }
-                }
-            }
-
-			if(event.type == sf::Event::MouseMoved)
+			if(!cannonBall.sprite)
 			{
-                Vector2f coords = window.map_pixel_to_coord(event.mouseMove.x, event.mouseMove.y);
+				int rnd = 0 + rand() % 10;
 
-                RectF aimBound = aim.get_global_bounds();
+				if(rnd != 6)
+				{
+					cannonBall.sprite = &gunDrum.front();
+					cannonBall.type = GunBallType::BALL;
+				}
+				else
+				{
+					cannonBall.sprite = &gunDrum.back();
+					cannonBall.type = GunBallType::BOMB;
+				}
 
-                aim.set_position(coords.x - (aimBound.width / 2), coords.y - (aimBound.height / 2));
-
-                Vector2f pos = cannon.get_position();
-                float angle = std::atan2(coords.y - pos.y, coords.x - pos.x);
-                angle = ((angle * 180.f) / float(M_PI) + 90);
-
-                cannon.set_rotation(angle);
+				cannonBall.sprite->set_position(10, (windowSize.y - (windowSize.y / 5)));
 			}
-        }
-		
 
-        window.clear();
+			cannonDelay.update(time);
+			delay.update(time);
+
+
+			if(timer.asSeconds() <= 0)
+				appIsRun = false;
+
+			while (window.poll_events())
+			{
+				event = window.get_event().get_object();
+				if (event.type == sf::Event::Closed)
+					appIsRun = false;
+
+				if(event.type == sf::Event::MouseButtonPressed)
+				{
+					if(event.mouseButton.button == sf::Mouse::Left)
+					{
+						if(cannonBall.sprite)
+						{
+							RectF bound = cannonBall.sprite->get_global_bounds();
+							RectF boundCannon = cannon.get_global_bounds();
+
+							Vector2f pos = cannon.get_position();
+							float angle = (cannon.get_rotation() - 180) + 45;
+							Vector2f coord = move(angle, pos, Vector2f{boundCannon.height / 2, boundCannon.height / 2});
+
+							cannonBall.sprite->set_position(coord.x - (bound.width / 2), coord.y - (bound.height / 2));
+
+							gun.angle = cannon.get_rotation();
+							gun.ball = &cannonBall;
+							cannonDelay.run();
+						}
+					}
+				}
+
+				if(event.type == sf::Event::MouseMoved)
+				{
+					Vector2f coords = window.map_pixel_to_coord(event.mouseMove.x, event.mouseMove.y);
+
+					RectF aimBound = aim.get_global_bounds();
+
+					aim.set_position(coords.x - (aimBound.width / 2), coords.y - (aimBound.height / 2));
+
+					Vector2f pos = cannon.get_position();
+					float angle = std::atan2(coords.y - pos.y, coords.x - pos.x);
+					angle = ((angle * 180.f) / float(M_PI) + 90);
+
+					cannon.set_rotation(angle);
+				}
+			}
+			
+
+			window.clear();
+			window.draw(background);
+			window.draw(stand);
+			window.draw(cannon);
+
+			if(cannonBall.sprite)
+				window.draw(cannonBall.sprite);
+
+			for(auto&& val : targets)
+				if(val.isLife)
+					window.draw(val.sprite);
+
+			window.draw(aim);
+
+			window.draw(score);
+			window.draw(timerStat);
+			window.display();
+		}
+
+		window.clear();
 		window.draw(background);
-		window.draw(stand);
-		window.draw(cannon);
+		window.draw(buttonNew);
+		window.draw(buttonExit);
+		window.display();
 
-		if(cannonBall.sprite)
-			window.draw(cannonBall.sprite);
-
-		for(auto&& val : targets)
-			if(val.isLife)
-				window.draw(val.sprite);
-
-        window.draw(aim);
-
-		window.draw(score);
-        window.display();
     }
 
     return 0;

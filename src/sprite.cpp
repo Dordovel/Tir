@@ -88,6 +88,16 @@ bool Sprite::intersect(const IStatic& object) const noexcept
     return this->intersect(&object);
 }
 
+bool Sprite::intersect(const Vector2f& object) const noexcept
+{
+	return this->intersect(object.x, object.y);
+}
+
+bool Sprite::intersect(float x, float y) const noexcept
+{
+    return this->_sprite.getGlobalBounds().contains(x, y);
+}
+
 void Sprite::move(float x, float y) noexcept
 {
     this->_sprite.move(x, y);

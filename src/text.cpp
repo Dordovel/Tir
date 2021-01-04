@@ -130,3 +130,31 @@ void Text::set_color(ColorDef color) noexcept
 {
 	this->_text.setFillColor(Rgb::color(color));
 }
+
+bool Text::intersect(const IStatic *const object) const noexcept
+{
+    RectF bound = object->get_global_bounds();
+
+    sf::FloatRect rect;
+    rect.top = bound.top;
+    rect.left = bound.left;
+    rect.height = bound.height;
+    rect.width = bound.width;
+
+    return this->_text.getGlobalBounds().intersects(rect);
+}
+
+bool Text::intersect(const IStatic& object) const noexcept
+{
+    return this->intersect(&object);
+}
+
+bool Text::intersect(const Vector2f& object) const noexcept
+{
+	return this->intersect(object.x, object.y);
+}
+
+bool Text::intersect(float x, float y) const noexcept
+{
+    return this->_text.getGlobalBounds().contains(x, y);
+}

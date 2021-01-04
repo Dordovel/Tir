@@ -11,7 +11,8 @@
 
 class IText : public IDrawable,
                 public ITransform,
-                public IStatic
+                public IStatic,
+				public IIntersect
 {
 	public:
 
