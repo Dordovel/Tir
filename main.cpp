@@ -8,7 +8,6 @@
 #include "./header/delay.hpp"
 
 #include <cmath>
-#include <iostream>
 
 enum class TYPE
 {
@@ -310,7 +309,6 @@ int main()
                 {
                     if(cannonBall.sprite)
                     {
-						std::cout<<"LOAD\n";
                         RectF bound = cannonBall.sprite->get_global_bounds();
                         RectF boundCannon = cannon.get_global_bounds();
 
