@@ -88,12 +88,29 @@ int main()
 									(windowSize.y / backgroundSize.height));
 
 
-	Text score = Text(RESOURCES_FOLDER + "Font.otf");
+	Text scoreTitle = Text(RESOURCES_FOLDER + "Font.otf");
+	Text score = scoreTitle;
 	{
+		scoreTitle.set_text("Score: ");
+		scoreTitle.set_color(ColorDef::RED);
+
+		Vector2f pos = {
+							windowSize.x - (windowSize.x / 3.f),
+							windowSize.y - (windowSize.y / 6.f)
+					};
+		scoreTitle.set_position(pos);
+
+		RectF size = scoreTitle.get_global_bounds();
+
 		score.set_text("0");
-		score.set_position(windowSize.x - (windowSize.x / 6), windowSize.y - (windowSize.y / 6));
+		score.set_position(
+							pos.x + size.width,
+							pos.y);
+
 		score.set_color(ColorDef::RED);
 	}
+
+	Text timerStat = score;
 
     Sprite aim = Sprite(RESOURCES_FOLDER + "Aim.png");
     aim.set_scale(0.3f, 0.3f);
@@ -235,7 +252,7 @@ int main()
 				}
             };
 
-    Delay delay(30.f, functor);
+    Delay delay(50.f, functor);
     if(!delay.is_run())
         delay.run();
 
@@ -265,7 +282,7 @@ int main()
 				}
             };
 
-    Delay cannonDelay(20.0f, cannonFunctor);
+    Delay cannonDelay(30.0f, cannonFunctor);
         cannonDelay.run();
 
 	sf::Event event;
@@ -273,8 +290,6 @@ int main()
 	float time = 1;
 
 	sf::Time timer = sf::seconds(60 * 2);
-
-	Text timerStat = score;
 
 	bool appIsRun = false;
 
@@ -407,6 +422,7 @@ int main()
 
 			window.draw(aim);
 
+			window.draw(scoreTitle);
 			window.draw(score);
 			window.draw(timerStat);
 			window.display();
