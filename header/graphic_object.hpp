@@ -6,7 +6,7 @@ namespace sf
 	class Drawable;
 };
 
-class GraphicObject
+class GraphicObject final
 {
 	public:
 		const sf::Drawable& object;

@@ -13,12 +13,12 @@ template<typename T, typename ...Args>
 Delay(int, T, Args&&...)->Delay<T, Args...>;
 
 template <typename Functor>
-class Delay<Functor> : public ADelay
+class Delay<Functor> final : public ADelay
 {
     private:
         Functor _functor;
 
-		void invoke()
+		void invoke() override
 		{
 			this->_functor();
 		}
@@ -28,13 +28,13 @@ class Delay<Functor> : public ADelay
 };
 
 template <typename Functor, typename ...Args>
-class Delay : public ADelay
+class Delay final : public ADelay
 {
     private:
         Functor _functor;
 		std::tuple<Args...> _functorParams;
 
-		void invoke()
+		void invoke() override
 		{
 			std::apply(this->_functor, this->_functorParams);
 		}

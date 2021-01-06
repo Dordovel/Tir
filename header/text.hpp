@@ -11,7 +11,7 @@ namespace sf
 	class Font;
 };
 
-class Text : public IText
+class Text final : public IText
 {
     private:
 		sf::Text _text;

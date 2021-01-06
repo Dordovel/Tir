@@ -11,7 +11,7 @@ namespace sf
 	class Texture;
 };
 
-class Sprite : public ISptire
+class Sprite final : public ISptire
 {
     private:
         std::shared_ptr<sf::Texture> _texture;

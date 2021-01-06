@@ -5,7 +5,7 @@
 
 #include <SFML/Window/Event.hpp>
 
-class Event : public IEvent
+class Event final : public IEvent
 {
 	public:
 		sf::Event _object;

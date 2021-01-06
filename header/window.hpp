@@ -7,7 +7,7 @@
 #include <memory>
 #include <SFML/Graphics/RenderWindow.hpp>
 
-class Window : public IWindow, public sf::RenderWindow
+class Window final : public IWindow, public sf::RenderWindow
 {
 	public:
 		Window(unsigned int width, unsigned int height, std::string_view title);
