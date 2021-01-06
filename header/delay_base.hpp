@@ -5,12 +5,14 @@
 
 class ADelay
 {
-    protected:
+	private:
 
         sf::Time _frame;
         sf::Time _current;
 
         bool _isRun;
+
+    protected:
 
 		virtual void invoke() = 0;
 
