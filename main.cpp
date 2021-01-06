@@ -6,62 +6,12 @@
 #include "./header/vector2f.hpp"
 #include "./header/rectf.hpp"
 #include "./header/delay.hpp"
+#include "./functor.hpp"
 
 #include <cmath>
 #include <iostream>
 
-enum class TYPE
-{
-	TYPE_0,
-	TYPE_1,
-	TYPE_2,
-	TYPE_3
-};
-
-enum class GunBallType
-{
-	BALL,
-	BOMB
-};
-
-TYPE inverce(TYPE type)
-{
-	if(type == TYPE::TYPE_0)
-	{
-		return TYPE::TYPE_3;
-	}
-	else if(type == TYPE::TYPE_1)
-	{
-		return TYPE::TYPE_2;
-	}
-	else if(type == TYPE::TYPE_2)
-	{
-		return TYPE::TYPE_1;
-	}
-
-	return TYPE::TYPE_0;
-}
-
 static inline std::string RESOURCES_FOLDER = "../resources/";
-
-struct Target
-{
-    Sprite sprite;
-    bool isLife = false;
-    TYPE type;
-};
-
-struct CannonBall
-{
-    Sprite* sprite = nullptr;
-	GunBallType type;
-};
-
-struct Gun
-{
-	CannonBall* ball = nullptr;
-    float angle = 0;
-};
 
 Vector2f move(float angle, Vector2f pos, Vector2f vel)
 {
@@ -149,110 +99,17 @@ int main()
 	{
 		gunDrum.emplace_back(RESOURCES_FOLDER + "Cannonball.png");
 		Sprite* tmp = &gunDrum.back();
-		tmp->set_scale(0.2f, 0.2f); 
+		tmp->set_scale(0.2f, 0.2f);
 
 		gunDrum.emplace_back(RESOURCES_FOLDER + "Bomb.png");
 		tmp = &gunDrum.back();
-		tmp->set_scale(0.2f, 0.2f); 
+		tmp->set_scale(0.2f, 0.2f);
 	}
 
 	CannonBall cannonBall;
 	Gun gun;
 
-    auto functor = [&gun, &score,  &targets, windowSize = window.get_size()]()
-            {
-				for(auto&& val : targets)
-				{
-					Vector2f pos = val.sprite.get_position();
-					RectF bounds = val.sprite.get_global_bounds();
-
-					if(val.isLife)
-					{
-						for(auto&& other : targets)
-						{
-							if(&other != &val)
-							{
-								if(val.sprite.intersect(other.sprite))
-								{
-									val.type = inverce(val.type);
-									other.type = inverce(other.type);
-								}
-							}
-						}
-
-						if(gun.ball)
-						{
-							CannonBall* cannonBall = gun.ball;
-
-							if (val.sprite.intersect(cannonBall->sprite))
-							{
-								if(cannonBall->type == GunBallType::BOMB)
-								{
-									for(auto && innerVal : targets)
-									{
-										innerVal.isLife = false;
-										cannonBall->sprite = nullptr;
-										gun.ball = nullptr;
-
-										int points = std::stoi(score.get_text());
-										points += 20;
-										score.set_text(std::to_string(points));
-									}
-
-									return;
-								}
-								else
-								{
-									val.isLife = false;
-									cannonBall->sprite = nullptr;
-									gun.ball = nullptr;
-
-									int points = std::stoi(score.get_text());
-									points += 20;
-									score.set_text(std::to_string(points));
-								}
-							}
-						}
-
-						if(pos.x >= (windowSize.x - bounds.width)
-							|| pos.x <= 0
-							|| pos.y <= 0
-							|| pos.y >= (windowSize.y - bounds.height))
-						{
-							val.isLife = false;
-						}
-
-						if(val.isLife)
-						{
-							if(val.type == TYPE::TYPE_0)
-								val.sprite.move(3, 0);
-							else if(val.type == TYPE::TYPE_1)
-								val.sprite.move(3, 1);
-							else if(val.type == TYPE::TYPE_2)
-								val.sprite.move(-3, 1);
-							else if(val.type == TYPE::TYPE_3)
-								val.sprite.move(-3, 0);
-						}
-					}
-					else
-					{
-						val.type = static_cast<TYPE>(0 + rand() % 4);
-
-						if(val.type == TYPE::TYPE_0 || val.type == TYPE::TYPE_1)
-						{
-							val.sprite.set_position(5, 5);
-							val.isLife = true;
-						}
-						else if(val.type == TYPE::TYPE_2 || val.type == TYPE::TYPE_3)
-						{
-							val.sprite.set_position((windowSize.x - bounds.width) - 5, 5);
-							val.isLife = true;
-						}
-					}
-				}
-            };
-
-    Delay delay(50.f, functor);
+    Delay delay(50.f, functor, gun, score, targets, windowSize);
     if(!delay.is_run())
         delay.run();
 
@@ -314,7 +171,7 @@ int main()
 					if(event.mouseButton.button == sf::Mouse::Left)
 					{
 						Vector2f coords = window.map_pixel_to_coord(event.mouseButton.x, event.mouseButton.y);
-						
+
 						if(buttonNew.intersect(coords))
 						{
 							appIsRun = true;
@@ -406,7 +263,6 @@ int main()
 					cannon.set_rotation(angle);
 				}
 			}
-			
 
 			window.clear();
 			window.draw(background);
