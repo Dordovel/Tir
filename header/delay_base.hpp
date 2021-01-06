@@ -14,7 +14,7 @@ class ADelay
 
     protected:
 
-		virtual void invoke() = 0;
+		virtual void invoke() const noexcept = 0;
 
 		ADelay(float delay, bool stat);
 

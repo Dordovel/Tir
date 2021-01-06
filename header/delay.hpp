@@ -18,7 +18,7 @@ class Delay<Functor> final : public ADelay
     private:
         Functor _functor;
 
-		void invoke() override
+		void invoke() const noexcept override
 		{
 			this->_functor();
 		}
@@ -34,7 +34,7 @@ class Delay final : public ADelay
         Functor _functor;
 		std::tuple<Args...> _functorParams;
 
-		void invoke() override
+		void invoke() const noexcept override
 		{
 			std::apply(this->_functor, this->_functorParams);
 		}
