@@ -199,7 +199,8 @@ int main()
 			timer -= clock.getElapsedTime();
 
 			{
-				timerStat.set_text(std::to_string(int(timer.asSeconds())) + " sec");
+				float sec = timer.asSeconds();
+				timerStat.set_text(std::to_string(int(sec / 60)) + ":" + std::to_string(int(sec) % 60));
 
 				RectF bound = timerStat.get_global_bounds();
 				Vector2f pos = {(windowSize. x - bound.width) - 20,
