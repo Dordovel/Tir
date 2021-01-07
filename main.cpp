@@ -15,20 +15,20 @@ static inline std::string RESOURCES_FOLDER = "../resources/";
 
 Vector2f move(float angle, Vector2f pos, Vector2f vel)
 {
-    sf::Transform rotation;
-    rotation.rotate(angle);
-    sf::Vector2f velosity(vel.x, vel.y);
+	sf::Transform rotation;
+	rotation.rotate(angle);
+	sf::Vector2f velosity(vel.x, vel.y);
 
-    sf::Vector2f step = sf::Vector2f{pos.x, pos.y} + rotation.transformPoint(velosity);
+	sf::Vector2f step = sf::Vector2f{pos.x, pos.y} + rotation.transformPoint(velosity);
 
-    return {step.x, step.y};
+	return {step.x, step.y};
 }
 
 int main()
 {
-    Window window = Window(500, 500, "Test");
+	Window window = Window(500, 500, "Test");
 
-    Sprite background = Sprite(RESOURCES_FOLDER + "background.png");
+	Sprite background = Sprite(RESOURCES_FOLDER + "background.png");
 
 	RectF backgroundSize = background.get_global_bounds();
 
@@ -60,13 +60,25 @@ int main()
 		score.set_color(ColorDef::RED);
 	}
 
-	Text timerStat = score;
+	Text buttonNew = score;
+	buttonNew.set_text("New");
+	buttonNew.set_position((windowSize.x / 2) , ((windowSize.y / 2) - buttonNew.get_global_bounds().height));
 
-    Sprite aim = Sprite(RESOURCES_FOLDER + "Aim.png");
-    aim.set_scale(0.3f, 0.3f);
+	Text buttonExit = buttonNew;
+	buttonExit.set_text("Exit");
+	buttonExit.set_position((windowSize.x / 2) , ((windowSize.y / 2) + buttonExit.get_global_bounds().height));
+
+	Text timerStat = buttonExit;
+
+	sf::Time timer = sf::seconds(60 * 2);
+	Sprite timerIcon = Sprite(RESOURCES_FOLDER + "Clock.png");
+	timerIcon.set_scale(0.2, 0.2);
+
+	Sprite aim = Sprite(RESOURCES_FOLDER + "Aim.png");
+	aim.set_scale(0.3f, 0.3f);
 
 	Sprite stand = Sprite(RESOURCES_FOLDER + "Stand.png");
-    stand.set_scale(0.2f, 0.2f);
+	stand.set_scale(0.2f, 0.2f);
 
 	Sprite cannon = Sprite(RESOURCES_FOLDER + "Cannon.png");
 	{
@@ -76,15 +88,16 @@ int main()
 		cannon.set_scale(0.17f, 0.17f);
 	}
 
+	{
+		RectF standSize = stand.get_global_bounds();
 
-	RectF standSize = stand.get_global_bounds();
+		Vector2f coords = Vector2f{windowSize.x / 2.f,
+						   windowSize.y - (windowSize.y / 5.f)};
 
-	Vector2f coords = Vector2f{windowSize.x / 2.f,
-                       windowSize.y - (windowSize.y / 5.f)};
+		stand.set_position(coords.x - (standSize. width / 2), coords.y);
 
-	stand.set_position(coords.x - (standSize. width / 2), coords.y);
-
-	cannon.set_position((coords.x), (coords.y + standSize.height / 3));
+		cannon.set_position((coords.x), (coords.y + standSize.height / 3));
+	}
 
 	std::vector<Target> targets;
 	{
@@ -109,17 +122,13 @@ int main()
 	CannonBall cannonBall;
 	Gun gun;
 
-    Delay delay(50.f, functor, gun, score, targets, windowSize);
-    if(!delay.is_run())
-        delay.run();
-
-    auto cannonFunctor = [&gun, windowSize = window.get_size()]()
-            {
+	auto cannonFunctor = [&gun, windowSize = window.get_size()]()
+			{
 				if(!gun.ball) return;
 
 				CannonBall* cannonBall = gun.ball;
 
-                Vector2f pos = cannonBall->sprite->get_position();
+				Vector2f pos = cannonBall->sprite->get_position();
 
 				if (pos.x >= (windowSize.x)
 					|| pos.x <= 0
@@ -137,34 +146,32 @@ int main()
 
 					cannonBall->sprite->set_position(coord);
 				}
-            };
+			};
 
-    Delay cannonDelay(30.0f, cannonFunctor);
-        cannonDelay.run();
+	Delay cannonDelay(30.0f, cannonFunctor);
+		cannonDelay.run();
+
+	Delay delay(50.f, functor, gun, score, targets, windowSize);
+	if(!delay.is_run())
+		delay.run();
 
 	sf::Event event;
 	sf::Clock clock;
 	float time = 1;
 
-	sf::Time timer = sf::seconds(60 * 2);
 
 	bool appIsRun = false;
 
-	Text buttonNew = timerStat;
-	buttonNew.set_text("New");
-	buttonNew.set_position((windowSize.x / 2) , ((windowSize.y / 2) - buttonNew.get_global_bounds().height));
 
-	Text buttonExit = buttonNew;
-	buttonExit.set_text("Exit");
-	buttonExit.set_position((windowSize.x / 2) , ((windowSize.y / 2) + buttonExit.get_global_bounds().height));
-
-    while (window.is_open())
+	while (window.is_open())
 	{
 		while (window.poll_events())
 		{
 			event = window.get_event().get_object();
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+			}
 
 				if(event.type == sf::Event::MouseButtonPressed)
 				{
@@ -190,8 +197,20 @@ int main()
 			time += clock.getElapsedTime().asMilliseconds();
 
 			timer -= clock.getElapsedTime();
-			timerStat.set_text("Time: " + std::to_string(int(timer.asSeconds())) + " sec");
-			timerStat.set_position((windowSize. x - timerStat.get_global_bounds().width) - 20, windowSize. y / 2);
+
+			{
+				timerStat.set_text(std::to_string(int(timer.asSeconds())) + " sec");
+
+				RectF bound = timerStat.get_global_bounds();
+				Vector2f pos = {(windowSize. x - bound.width) - 20,
+								windowSize. y / 2.f};
+
+				timerStat.set_position(pos);
+
+				bound = timerIcon.get_global_bounds();
+
+				timerIcon.set_position(pos.x - bound.width, pos.y);
+			}
 
 			clock.restart();
 
@@ -281,6 +300,7 @@ int main()
 			window.draw(scoreTitle);
 			window.draw(score);
 			window.draw(timerStat);
+			window.draw(timerIcon);
 			window.display();
 		}
 
@@ -290,7 +310,7 @@ int main()
 		window.draw(buttonExit);
 		window.display();
 
-    }
+	}
 
-    return 0;
+	return 0;
 }
