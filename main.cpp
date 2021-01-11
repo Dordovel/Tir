@@ -250,7 +250,7 @@ int main()
 				{
 					if(event.mouseButton.button == sf::Mouse::Left)
 					{
-						if(cannonBall.sprite)
+						if(cannonBall.sprite && !gun.ball)
 						{
 							RectF bound = cannonBall.sprite->get_global_bounds();
 							RectF boundCannon = cannon.get_global_bounds();
