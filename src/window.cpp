@@ -10,7 +10,7 @@ static inline Event event;
 Window::Window(unsigned int width, unsigned int height, std::string_view title):
 				sf::RenderWindow(sf::VideoMode(width, height), title.data(), sf::Style::Titlebar | sf::Style::Close)
 {
-    //sf::RenderWindow::setMouseCursorVisible(false);
+	sf::RenderWindow::setMouseCursorVisible(false);
 }
 
 void Window::draw(const IDrawable* const object) noexcept

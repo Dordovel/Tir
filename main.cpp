@@ -34,6 +34,17 @@ int main()
 
 	Vector2ui windowSize = window.get_size();
 
+	Sprite aim = Sprite(RESOURCES_FOLDER + "Aim.png");
+	aim.set_scale(0.3f, 0.3f);
+
+	auto mouse_move = [&aim](Vector2f coords)
+				{
+					RectF aimBound = aim.get_global_bounds();
+
+					aim.set_position(coords.x - (aimBound.width / 2),
+										coords.y - (aimBound.height / 2));
+				};
+
 	background.set_scale((windowSize.x / backgroundSize.width),
 									(windowSize.y / backgroundSize.height));
 
@@ -62,20 +73,19 @@ int main()
 
 	Text buttonNew = score;
 	buttonNew.set_text("New");
-	buttonNew.set_position((windowSize.x / 2) , ((windowSize.y / 2) - buttonNew.get_global_bounds().height));
+	buttonNew.set_position((windowSize.x / 2) ,
+							((windowSize.y / 2) - buttonNew.get_global_bounds().height));
 
 	Text buttonExit = buttonNew;
 	buttonExit.set_text("Exit");
-	buttonExit.set_position((windowSize.x / 2) , ((windowSize.y / 2) + buttonExit.get_global_bounds().height));
+	buttonExit.set_position((windowSize.x / 2) ,
+							((windowSize.y / 2) + buttonExit.get_global_bounds().height));
 
 	Text timerStat = buttonExit;
 
 	sf::Time timer = sf::seconds(60 * 2);
 	Sprite timerIcon = Sprite(RESOURCES_FOLDER + "Clock.png");
 	timerIcon.set_scale(0.2, 0.2);
-
-	Sprite aim = Sprite(RESOURCES_FOLDER + "Aim.png");
-	aim.set_scale(0.3f, 0.3f);
 
 	Sprite stand = Sprite(RESOURCES_FOLDER + "Stand.png");
 	stand.set_scale(0.2f, 0.2f);
@@ -165,6 +175,7 @@ int main()
 
 	while (window.is_open())
 	{
+		//MAIN MENU EVENT LOOP
 		while (window.poll_events())
 		{
 			event = window.get_event().get_object();
@@ -173,25 +184,33 @@ int main()
 				window.close();
 			}
 
-				if(event.type == sf::Event::MouseButtonPressed)
+			if(event.type == sf::Event::MouseMoved)
+			{
+				Vector2f coords = window.map_pixel_to_coord(event.mouseMove.x, event.mouseMove.y);
+
+				mouse_move(coords);
+			}
+
+			if(event.type == sf::Event::MouseButtonPressed)
+			{
+				if(event.mouseButton.button == sf::Mouse::Left)
 				{
-					if(event.mouseButton.button == sf::Mouse::Left)
+					Vector2f coords = window.map_pixel_to_coord(event.mouseButton.x, event.mouseButton.y);
+
+					if(buttonNew.intersect(coords))
 					{
-						Vector2f coords = window.map_pixel_to_coord(event.mouseButton.x, event.mouseButton.y);
+						appIsRun = true;
+					}
 
-						if(buttonNew.intersect(coords))
-						{
-							appIsRun = true;
-						}
-
-						if(buttonExit.intersect(coords))
-						{
-							window.close();
-						}
+					if(buttonExit.intersect(coords))
+					{
+						window.close();
 					}
 				}
-		}
+			}
+		} //MAIN MENU EVENT LOOP
 
+		//GAME LOOP
 		while(appIsRun)
 		{
 			time += clock.getElapsedTime().asMilliseconds();
@@ -257,9 +276,12 @@ int main()
 
 							Vector2f pos = cannon.get_position();
 							float angle = (cannon.get_rotation() - 180) + 45;
-							Vector2f coord = move(angle, pos, Vector2f{boundCannon.height / 2, boundCannon.height / 2});
+							Vector2f coord = move(angle, pos,
+													Vector2f{boundCannon.height / 2,
+																boundCannon.height / 2});
 
-							cannonBall.sprite->set_position(coord.x - (bound.width / 2), coord.y - (bound.height / 2));
+							cannonBall.sprite->set_position(coord.x - (bound.width / 2),
+															coord.y - (bound.height / 2));
 
 							gun.angle = cannon.get_rotation();
 							gun.ball = &cannonBall;
@@ -272,9 +294,7 @@ int main()
 				{
 					Vector2f coords = window.map_pixel_to_coord(event.mouseMove.x, event.mouseMove.y);
 
-					RectF aimBound = aim.get_global_bounds();
-
-					aim.set_position(coords.x - (aimBound.width / 2), coords.y - (aimBound.height / 2));
+					mouse_move(coords);
 
 					Vector2f pos = cannon.get_position();
 					float angle = std::atan2(coords.y - pos.y, coords.x - pos.x);
@@ -303,10 +323,11 @@ int main()
 			window.draw(timerStat);
 			window.draw(timerIcon);
 			window.display();
-		}
+		}//GAME LOOP
 
 		window.clear();
 		window.draw(background);
+		window.draw(aim);
 		window.draw(buttonNew);
 		window.draw(buttonExit);
 		window.display();
