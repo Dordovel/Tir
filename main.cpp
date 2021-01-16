@@ -8,7 +8,6 @@
 #include "./header/delay.hpp"
 #include "./functor.hpp"
 
-#include <cmath>
 #include <iostream>
 
 static inline std::string RESOURCES_FOLDER = "../resources/";

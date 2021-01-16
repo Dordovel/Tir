@@ -7,7 +7,9 @@
 #include "./struct.hpp"
 #include "./header/text.hpp"
 
+#include <cmath>
 #include <vector>
+
 namespace
 {
 	TYPE inverce(TYPE type)
