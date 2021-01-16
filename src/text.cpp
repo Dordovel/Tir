@@ -9,47 +9,48 @@
 
 #include <SFML/Graphics/Color.hpp>
 
-namespace 
+namespace
 {
 	class Rgb : public sf::Color
 	{
 		public:
-            Rgb(int red, int green, int blue) : sf::Color(red, green, blue){};
-			
-		 	static Rgb color (const ColorDef& color)
+            Rgb(int red, int green, int blue, int alpha) : sf::Color(red, green, blue, alpha){};
+			static Rgb color (const ColorDef& color)
 			{
 				switch(color)
 				{
 					case ColorDef::WHITE:
-						return Rgb(255, 255, 255);
+						return Rgb(255, 255, 255, 255);
 
 					case ColorDef::BLACK:
-						return Rgb(0, 0, 0);
+						return Rgb(0, 0, 0, 255);
 
 					case ColorDef::GREEN:
-						return Rgb(0, 255, 0);
+						return Rgb(0, 255, 0, 255);
 
 					case ColorDef::RED:
-						return Rgb(255, 0, 0);
+						return Rgb(255, 0, 0, 255);
 
 					case ColorDef::YELLOW:
-						return Rgb(255, 255, 0);
+						return Rgb(255, 255, 0, 255);
 
 					case ColorDef::BLUE:
-						return Rgb(0, 0, 255);
+						return Rgb(0, 0, 255, 255);
+
+					case ColorDef::TRANSPARENT:
+						return Rgb(112, 173, 148, 25);
 
 				}
 
-				return Rgb(0, 0, 0);
+				return Rgb(0, 0, 0, 255);
 			}
-
 	};
 };
 
 
 Text::Text(std::string_view path)
 {
-   	this->_font = std::make_shared<sf::Font>();
+	this->_font = std::make_shared<sf::Font>();
 	assert(this->_font->loadFromFile(path.data()) && "Resource file not load");
 
 	this->_text.setFont(*this->_font);

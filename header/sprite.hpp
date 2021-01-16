@@ -38,6 +38,8 @@ class Sprite final : public ISptire
 
 		void set_origin(float x, float y) noexcept override;
 
+		void set_color(ColorDef color) noexcept override;
+
         Vector2f get_origin() const noexcept override;
 
         Vector2f get_position() const noexcept override;

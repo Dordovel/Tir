@@ -8,7 +8,8 @@ enum class ColorDef
 	GREEN,
 	BLACK,
 	BLUE,
-	WHITE
+	WHITE,
+	TRANSPARENT
 };
 
 #endif //PROJECT_COLOR_INTERFACE

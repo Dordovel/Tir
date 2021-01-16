@@ -7,6 +7,44 @@
 
 #include <SFML/Graphics/Texture.hpp>
 
+namespace
+{
+	class Rgb : public sf::Color
+	{
+		public:
+            Rgb(int red, int green, int blue, int alpha) : sf::Color(red, green, blue, alpha){};
+			static Rgb color (const ColorDef& color)
+			{
+				switch(color)
+				{
+					case ColorDef::WHITE:
+						return Rgb(255, 255, 255, 255);
+
+					case ColorDef::BLACK:
+						return Rgb(0, 0, 0, 255);
+
+					case ColorDef::GREEN:
+						return Rgb(0, 255, 0, 255);
+
+					case ColorDef::RED:
+						return Rgb(255, 0, 0, 255);
+
+					case ColorDef::YELLOW:
+						return Rgb(255, 255, 0, 255);
+
+					case ColorDef::BLUE:
+						return Rgb(0, 0, 255, 255);
+
+					case ColorDef::TRANSPARENT:
+						return Rgb(112, 173, 148, 25);
+
+				}
+
+				return Rgb(0, 0, 0, 255);
+			}
+	};
+};
+
 Sprite::Sprite(std::string_view path)
 {
 	this->_texture = std::make_shared<sf::Texture>();
@@ -41,6 +79,11 @@ RectF Sprite::get_global_bounds() const noexcept
 void Sprite::set_scale(float x, float y) noexcept
 {
 	this->_sprite.setScale(x, y);
+}
+
+void Sprite::set_color(ColorDef color) noexcept
+{
+	this->_sprite.setColor(Rgb::color(color));
 }
 
 void Sprite::set_position(float x, float y) noexcept

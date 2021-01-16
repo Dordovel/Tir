@@ -4,15 +4,18 @@
 #include "./idrawable.hpp"
 #include "./itransform.hpp"
 #include "./iintersect.hpp"
+#include "./ipaintable.hpp"
 
 
 class ISptire : public IDrawable,
                 public ITransform,
                 public IStatic,
+                public IPaintable,
                 public IIntersect
 {
 	public:
 		virtual void set_origin(float x, float y) noexcept = 0;
+
         virtual Vector2f get_origin() const noexcept = 0;
 
 		virtual ~ISptire() = default;

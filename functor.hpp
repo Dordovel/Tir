@@ -8,24 +8,82 @@
 #include "./header/text.hpp"
 
 #include <vector>
-
-TYPE inverce(TYPE type)
+namespace
 {
-	if(type == TYPE::TYPE_0)
+	TYPE inverce(TYPE type)
 	{
-		return TYPE::TYPE_3;
-	}
-	else if(type == TYPE::TYPE_1)
-	{
-		return TYPE::TYPE_2;
-	}
-	else if(type == TYPE::TYPE_2)
-	{
-		return TYPE::TYPE_1;
+		if(type == TYPE::TYPE_0)
+		{
+			return TYPE::TYPE_3;
+		}
+		else if(type == TYPE::TYPE_1)
+		{
+			return TYPE::TYPE_2;
+		}
+		else if(type == TYPE::TYPE_2)
+		{
+			return TYPE::TYPE_1;
+		}
+
+		return TYPE::TYPE_0;
 	}
 
-	return TYPE::TYPE_0;
-}
+	void move(Target* const value, Vector2f step)
+	{
+		if(value->type == TYPE::TYPE_0
+				|| value->type == TYPE::TYPE_1)
+		{
+			value->sprite.move((step.x / 2), step.y);
+		}
+		else if(value->type == TYPE::TYPE_2
+				|| value->type == TYPE::TYPE_3)
+		{
+			value->sprite.move(step.x * (-1), step.y);
+		}
+	}
+
+	void generate(Target* const value, Vector2ui place)
+	{
+		RectF bounds = value->sprite.get_global_bounds();
+
+		value->isLife = true;
+		value->type = static_cast<TYPE>(0 + rand() % 4);
+
+		if(value->type == TYPE::TYPE_0)
+		{
+			value->sprite.set_position(5, 5);
+			value->sprite.set_color(ColorDef::WHITE);
+		}
+		else if(value->type == TYPE::TYPE_1)
+		{
+			value->sprite.set_position(5, bounds.height + 5);
+			value->sprite.set_color(ColorDef::WHITE);
+		}
+		else if(value->type == TYPE::TYPE_2)
+		{
+			value->sprite.set_position((place.x - bounds.width) - 5, 5);
+			value->sprite.set_color(ColorDef::BLUE);
+		}
+		else if(value->type == TYPE::TYPE_3)
+		{
+			value->sprite.set_position((place.x - bounds.width) - 5,
+									bounds.height + 5);
+			value->sprite.set_color(ColorDef::BLUE);
+		}
+	}
+
+	void collision(Target* const lv, Target* const rv)
+	{
+		if(lv->sprite.intersect(rv->sprite))
+		{
+			lv->type = inverce(lv->type);
+			rv->type = inverce(rv->type);
+
+			move(lv, {15, 0});
+			move(rv, {15, 0});
+		}
+	}
+};
 
 void functor(Gun& gun, Text& score, std::vector<Target>& targets, Vector2ui windowSize)
             {
@@ -40,11 +98,7 @@ void functor(Gun& gun, Text& score, std::vector<Target>& targets, Vector2ui wind
 						{
 							if(&other != &val)
 							{
-								if(val.sprite.intersect(other.sprite))
-								{
-									val.type = inverce(val.type);
-									other.type = inverce(other.type);
-								}
+								collision(&val, &other);
 							}
 						}
 
@@ -92,30 +146,12 @@ void functor(Gun& gun, Text& score, std::vector<Target>& targets, Vector2ui wind
 
 						if(val.isLife)
 						{
-							if(val.type == TYPE::TYPE_0)
-								val.sprite.move(3, 0);
-							else if(val.type == TYPE::TYPE_1)
-								val.sprite.move(3, 1);
-							else if(val.type == TYPE::TYPE_2)
-								val.sprite.move(-3, 1);
-							else if(val.type == TYPE::TYPE_3)
-								val.sprite.move(-3, 0);
+							move(&val, {3, 0});
 						}
 					}
 					else
 					{
-						val.type = static_cast<TYPE>(0 + rand() % 4);
-
-						if(val.type == TYPE::TYPE_0 || val.type == TYPE::TYPE_1)
-						{
-							val.sprite.set_position(5, 5);
-							val.isLife = true;
-						}
-						else if(val.type == TYPE::TYPE_2 || val.type == TYPE::TYPE_3)
-						{
-							val.sprite.set_position((windowSize.x - bounds.width) - 5, 5);
-							val.isLife = true;
-						}
+						generate(&val, windowSize);
 					}
 				}
             };

@@ -115,7 +115,7 @@ int main()
 		target.sprite.set_scale(0.2f, 0.2f);
 		target.sprite.set_position(10, 5);
 
-		targets = std::vector(3, target);
+		targets = std::vector(4, target);
 	}
 
 	std::vector<Sprite> gunDrum;
