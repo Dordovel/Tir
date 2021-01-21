@@ -10,15 +10,15 @@ include_directories(Interface)
 file(GLOB SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME}
- 		${SOURCE_FILES}
+		${SOURCE_FILES}
         main.cpp interface/iintersect.hpp interface/istatic.hpp header/delay.hpp header/vector2i.hpp)
 
 if (UNIX)
-    set(SFML_ROOT ${CMAKE_SOURCE_DIR}/resources/SFML-2.5.1/unix)
+    set(SFML_ROOT ${CMAKE_SOURCE_DIR}/lib/SFML-2.5.1/unix)
 endif (UNIX)
 
 if(WIN32)
-    set(SFML_ROOT ${CMAKE_SOURCE_DIR}/resources/SFML-2.5.1/win)
+    set(SFML_ROOT ${CMAKE_SOURCE_DIR}/lib/SFML-2.5.1/win)
 endif(WIN32)
 
 set(SFML_DIR "${SFML_ROOT}/lib/cmake/SFML")

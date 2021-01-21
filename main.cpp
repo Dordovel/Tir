@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-static inline std::string RESOURCES_FOLDER = "../resources/";
+static inline std::string RESOURCES_FOLDER = "./resources/";
 
 Vector2f move(float angle, Vector2f pos, Vector2f vel)
 {
@@ -262,7 +262,17 @@ int main()
 			{
 				event = window.get_event().get_object();
 				if (event.type == sf::Event::Closed)
+				{
 					appIsRun = false;
+				}
+
+				if(event.type == sf::Event::KeyPressed)
+				{
+					if(event.key.code == sf::Keyboard::Escape)
+					{
+						appIsRun = false;
+					}
+				}
 
 				if(event.type == sf::Event::MouseButtonPressed)
 				{
