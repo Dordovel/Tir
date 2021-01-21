@@ -307,7 +307,7 @@ int main()
 
 					Vector2f pos = cannon.get_position();
 					float angle = std::atan2(coords.y - pos.y, coords.x - pos.x);
-					angle = ((angle * 180.f) / float(M_PI) + 90);
+					angle = ((angle * 180.f) / float(3.14) + 90);
 
 					cannon.set_rotation(angle);
 				}
