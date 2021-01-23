@@ -112,7 +112,7 @@ int main()
 		target.sprite.set_scale(0.2f, 0.2f);
 		target.sprite.set_position(10, 5);
 
-		targets = std::vector(4, target);
+		targets = std::vector(5, target);
 	}
 
 	std::vector<Sprite> gunDrum;
@@ -155,13 +155,13 @@ int main()
 				}
 			};
 
-    /*Delay cannonDelay(15, cannonFunctor);
+    Delay cannonDelay(5, cannonFunctor);
 		cannonDelay.run();
 
-    Delay delay(20, functor, gun, score, targets, windowSize);
+    Delay delay(10, functor, gun, score, targets, windowSize);
 	if(!delay.is_run())
 		delay.run();
-*/
+
 	sf::Event event;
 	sf::Clock clock;
 	float time = 1;
