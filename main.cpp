@@ -164,7 +164,6 @@ int main()
 
 	sf::Event event;
 	sf::Clock clock;
-	float time = 1;
     sf::Time timer;
 
 	bool appIsRun = false;
@@ -198,6 +197,7 @@ int main()
 					{
 						appIsRun = true;
 						timer = sf::seconds(60 * 2);
+						score.set_text("0");
 					}
 
 					if(buttonExit.intersect(coords))
@@ -212,7 +212,7 @@ int main()
 		while(appIsRun)
 		{
 			timer -= clock.getElapsedTime();
-            time += clock.restart().asSeconds();
+            clock.restart();
 
 			{
 				float sec = timer.asSeconds();
