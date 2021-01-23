@@ -155,13 +155,13 @@ int main()
 				}
 			};
 
-    Delay cannonDelay(15, cannonFunctor);
+    /*Delay cannonDelay(15, cannonFunctor);
 		cannonDelay.run();
 
     Delay delay(20, functor, gun, score, targets, windowSize);
 	if(!delay.is_run())
 		delay.run();
-
+*/
 	sf::Event event;
 	sf::Clock clock;
 	float time = 1;
@@ -287,7 +287,6 @@ int main()
 
 							gun.angle = cannon.get_rotation();
 							gun.ball = &cannonBall;
-							cannonDelay.run();
 						}
 					}
 				}
