@@ -1,24 +1,30 @@
 #ifndef PROJECT_DELAY_ABSTRACT_HEADER
 #define PROJECT_DELAY_ABSTRACT_HEADER
 
-#include <SFML/System/Time.hpp>
+#include <atomic>
+#include <thread>
+#include <condition_variable>
 
 class ADelay
 {
 	private:
-
-        sf::Time _frame;
-        sf::Time _current;
-
-        bool _isRun;
+        std::atomic<bool> _isRun;
+        std::atomic<bool> _isPause;
+        std::thread _thread;
+        long _delay;
+        std::condition_variable _cv;
 
     protected:
 
 		virtual void invoke() const noexcept = 0;
 
-		ADelay(float delay, bool stat);
+		ADelay(long delay, bool stat);
 
-    public:
+		virtual ~ADelay();
+
+		void worker(ADelay* delay) const noexcept;
+
+public:
 
         bool is_run() const noexcept;
 

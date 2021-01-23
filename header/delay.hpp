@@ -24,7 +24,7 @@ class Delay<Functor> final : public ADelay
 		}
 
     public:
-        Delay(float delay, Functor functor): ADelay(delay, false), _functor(functor){}
+        Delay(long delay, Functor functor): ADelay(delay, false), _functor(functor){}
 };
 
 template <typename Functor, typename ...Args>
@@ -40,7 +40,7 @@ class Delay final : public ADelay
 		}
 
     public:
-        Delay(float delay, Functor functor, Args&&... args):ADelay(delay, false),
+        Delay(long delay, Functor functor, Args&&... args):ADelay(delay, false),
 															_functor(functor),
 															_functorParams(std::forward_as_tuple(args...)){}
 

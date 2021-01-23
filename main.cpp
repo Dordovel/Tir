@@ -7,10 +7,7 @@
 #include "./header/rectf.hpp"
 #include "./header/delay.hpp"
 #include "./functor.hpp"
-
-#include <iostream>
-
-static inline std::string RESOURCES_FOLDER = "./resources/";
+#include "./header/data.hpp"
 
 Vector2f move(float angle, Vector2f pos, Vector2f vel)
 {
@@ -27,13 +24,15 @@ int main()
 {
 	Window window = Window(500, 500, "Test");
 
-	Sprite background = Sprite(RESOURCES_FOLDER + "background.png");
+	Resources resources = Resources("../resources");
+
+	Sprite background = Sprite(resources.get_resources("background"));
 
 	RectF backgroundSize = background.get_global_bounds();
 
 	Vector2ui windowSize = window.get_size();
 
-	Sprite aim = Sprite(RESOURCES_FOLDER + "Aim.png");
+	Sprite aim = Sprite(resources.get_resources("Aim"));
 	aim.set_scale(0.3f, 0.3f);
 
 	auto mouse_move = [&aim](Vector2f coords)
@@ -48,7 +47,7 @@ int main()
 									(windowSize.y / backgroundSize.height));
 
 
-	Text scoreTitle = Text(RESOURCES_FOLDER + "Font.otf");
+	Text scoreTitle = Text(resources.get_resources("Font"));
 	Text score = scoreTitle;
 	{
 		scoreTitle.set_text("Score: ");
@@ -82,14 +81,13 @@ int main()
 
 	Text timerStat = buttonExit;
 
-	sf::Time timer = sf::seconds(60 * 2);
-	Sprite timerIcon = Sprite(RESOURCES_FOLDER + "Clock.png");
+	Sprite timerIcon = Sprite( resources.get_resources("Clock"));
 	timerIcon.set_scale(0.2, 0.2);
 
-	Sprite stand = Sprite(RESOURCES_FOLDER + "Stand.png");
+	Sprite stand = Sprite(resources.get_resources("Stand"));
 	stand.set_scale(0.2f, 0.2f);
 
-	Sprite cannon = Sprite(RESOURCES_FOLDER + "Cannon.png");
+	Sprite cannon = Sprite(resources.get_resources("Cannon"));
 	{
 		RectF cannonSize = cannon.get_global_bounds();
 		cannon.set_origin((cannonSize.left + (cannonSize.width / 2)),
@@ -110,7 +108,7 @@ int main()
 
 	std::vector<Target> targets;
 	{
-		Target target = {Sprite(RESOURCES_FOLDER + "Target.png"), true, TYPE::TYPE_0};
+		Target target = {Sprite(resources.get_resources("Target")), true, TYPE::TYPE_0};
 		target.sprite.set_scale(0.2f, 0.2f);
 		target.sprite.set_position(10, 5);
 
@@ -119,11 +117,11 @@ int main()
 
 	std::vector<Sprite> gunDrum;
 	{
-		gunDrum.emplace_back(RESOURCES_FOLDER + "Cannonball.png");
+		gunDrum.emplace_back(resources.get_resources("Cannonball"));
 		Sprite* tmp = &gunDrum.back();
 		tmp->set_scale(0.2f, 0.2f);
 
-		gunDrum.emplace_back(RESOURCES_FOLDER + "Bomb.png");
+		gunDrum.emplace_back(resources.get_resources("Bomb"));
 		tmp = &gunDrum.back();
 		tmp->set_scale(0.2f, 0.2f);
 	}
@@ -157,17 +155,17 @@ int main()
 				}
 			};
 
-	Delay cannonDelay(30.0f, cannonFunctor);
+    Delay cannonDelay(15, cannonFunctor);
 		cannonDelay.run();
 
-	Delay delay(50.f, functor, gun, score, targets, windowSize);
+    Delay delay(20, functor, gun, score, targets, windowSize);
 	if(!delay.is_run())
 		delay.run();
 
 	sf::Event event;
 	sf::Clock clock;
 	float time = 1;
-
+    sf::Time timer;
 
 	bool appIsRun = false;
 
@@ -199,6 +197,7 @@ int main()
 					if(buttonNew.intersect(coords))
 					{
 						appIsRun = true;
+						timer = sf::seconds(60 * 2);
 					}
 
 					if(buttonExit.intersect(coords))
@@ -212,9 +211,8 @@ int main()
 		//GAME LOOP
 		while(appIsRun)
 		{
-			time += clock.getElapsedTime().asMilliseconds();
-
 			timer -= clock.getElapsedTime();
+            time += clock.restart().asSeconds();
 
 			{
 				float sec = timer.asSeconds();
@@ -231,7 +229,6 @@ int main()
 				timerIcon.set_position(pos.x - bound.width, pos.y);
 			}
 
-			clock.restart();
 
 			if(!cannonBall.sprite)
 			{
@@ -250,10 +247,6 @@ int main()
 
 				cannonBall.sprite->set_position(10, (windowSize.y - (windowSize.y / 5)));
 			}
-
-			cannonDelay.update(time);
-			delay.update(time);
-
 
 			if(timer.asSeconds() <= 0)
 				appIsRun = false;
