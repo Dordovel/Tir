@@ -6,8 +6,10 @@
 #include "./header/vector2f.hpp"
 #include "./header/rectf.hpp"
 #include "./header/delay.hpp"
-#include "./functor.hpp"
+#include "header/targets_functor.hpp"
 #include "./header/data.hpp"
+
+#include <cmath>
 
 Vector2f move(float angle, Vector2f pos, Vector2f vel)
 {
@@ -127,13 +129,13 @@ int main()
 	}
 
 	CannonBall cannonBall;
-	Gun gun;
+	Cannon gun;
 
-	auto cannonFunctor = [&gun, windowSize = window.get_size()]()
+	auto cannon_functor = [&gun, windowSize = window.get_size()]()
 			{
-				if(!gun.ball) return;
+				if(!gun.cannonBall) return;
 
-				CannonBall* cannonBall = gun.ball;
+				CannonBall* cannonBall = gun.cannonBall;
 
 				Vector2f pos = cannonBall->sprite->get_position();
 
@@ -143,7 +145,7 @@ int main()
 					|| pos.y >= (windowSize.y))
 				{
 					cannonBall->sprite = nullptr;
-					gun.ball = nullptr;
+					gun.cannonBall = nullptr;
 				}
 				else
 				{
@@ -155,12 +157,12 @@ int main()
 				}
 			};
 
-    Delay cannonDelay(5, cannonFunctor);
+    Delay cannonDelay(5, cannon_functor);
 		cannonDelay.run();
 
-    Delay delay(10, functor, gun, score, targets, windowSize);
-	if(!delay.is_run())
-		delay.run();
+    Delay targetsDelay(10, targets_functor, std::ref(gun), std::ref(score), std::ref(targets), windowSize);
+	if(!targetsDelay.is_run())
+		targetsDelay.run();
 
 	sf::Event event;
 	sf::Clock clock;
@@ -271,7 +273,7 @@ int main()
 				{
 					if(event.mouseButton.button == sf::Mouse::Left)
 					{
-						if(cannonBall.sprite && !gun.ball)
+						if(cannonBall.sprite && !gun.cannonBall)
 						{
 							RectF bound = cannonBall.sprite->get_global_bounds();
 							RectF boundCannon = cannon.get_global_bounds();
@@ -286,7 +288,7 @@ int main()
 															coord.y - (bound.height / 2));
 
 							gun.angle = cannon.get_rotation();
-							gun.ball = &cannonBall;
+							gun.cannonBall = &cannonBall;
 						}
 					}
 				}

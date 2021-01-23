@@ -14,8 +14,8 @@ struct CannonBall
 	GunBallType type;
 };
 
-struct Gun
+struct Cannon
 {
-	CannonBall* ball = nullptr;
+	CannonBall* cannonBall = nullptr;
     float angle = 0;
 };

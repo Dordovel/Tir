@@ -10,7 +10,7 @@ template<typename T, typename ...Args>
 class Delay;
 
 template<typename T, typename ...Args>
-Delay(int, T, Args&&...)->Delay<T, Args...>;
+Delay(int, T, Args...)->Delay<T, Args...>;
 
 template <typename Functor>
 class Delay<Functor> final : public ADelay
@@ -40,9 +40,9 @@ class Delay final : public ADelay
 		}
 
     public:
-        Delay(long delay, Functor functor, Args&&... args):ADelay(delay, false),
+        Delay(long delay, Functor functor, Args... args):ADelay(delay, false),
 															_functor(functor),
-															_functorParams(std::forward_as_tuple(args...)){}
+															_functorParams(std::make_tuple(args...)){}
 
 };
 
