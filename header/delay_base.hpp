@@ -31,8 +31,6 @@ public:
         void run() noexcept;
 
         void stop() noexcept;
-
-        void update(unsigned int delta) noexcept;
 };
 
 #endif //PROJECT_DELAY_ABSTRACT_HEADER
