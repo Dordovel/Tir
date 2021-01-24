@@ -9,7 +9,8 @@ enum class ColorDef
 	BLACK,
 	BLUE,
 	WHITE,
-	TRANSPARENT
+	TRANSPARENT,
+	CYAN
 };
 
 #endif //PROJECT_COLOR_INTERFACE

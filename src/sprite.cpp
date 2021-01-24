@@ -38,6 +38,9 @@ namespace
 					case ColorDef::TRANSPARENT:
 						return Rgb(112, 173, 148, 25);
 
+					case ColorDef::CYAN:
+						return Rgb(0, 128, 128, 255);
+
 				}
 
 				return Rgb(0, 0, 0, 255);

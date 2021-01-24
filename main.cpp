@@ -8,6 +8,8 @@
 #include "./header/delay.hpp"
 #include "header/targets_functor.hpp"
 #include "./header/data.hpp"
+#include "header/type_score.hpp"
+#include "header/score_manage.hpp"
 
 #include <cmath>
 
@@ -63,7 +65,6 @@ int main()
 
 		RectF size = scoreTitle.get_global_bounds();
 
-		score.set_text("0");
 		score.set_position(
 							pos.x + size.width,
 							pos.y);
@@ -107,6 +108,15 @@ int main()
 
 		cannon.set_position((coords.x), (coords.y + standSize.height / 3));
 	}
+
+	TypeScore typeScore = TypeScore();
+	typeScore.add_score_for_type(TYPE::TYPE_0, 10);
+	typeScore.add_score_for_type(TYPE::TYPE_1, 20);
+	typeScore.add_score_for_type(TYPE::TYPE_2, 30);
+	typeScore.add_score_for_type(TYPE::TYPE_3, 40);
+
+	ScoreManage scoreManage(typeScore);
+
 
 	std::vector<Target> targets;
 	{
@@ -160,7 +170,7 @@ int main()
     Delay cannonDelay(5, cannon_functor);
 		cannonDelay.run();
 
-    Delay targetsDelay(10, targets_functor, std::ref(gun), std::ref(score), std::ref(targets), windowSize);
+    Delay targetsDelay(10, targets_functor, std::ref(gun), std::ref(scoreManage), std::ref(targets), windowSize);
 	if(!targetsDelay.is_run())
 		targetsDelay.run();
 
@@ -231,6 +241,10 @@ int main()
 				timerIcon.set_position(pos.x - bound.width, pos.y);
 			}
 
+			if(scoreManage.is_update())
+			{
+				score.set_text(std::to_string(scoreManage.get_score()));
+			}
 
 			if(!cannonBall.sprite)
 			{

@@ -11,7 +11,7 @@ file(GLOB SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME}
 		${SOURCE_FILES}
-        main.cpp interface/iintersect.hpp interface/istatic.hpp header/delay.hpp header/vector2i.hpp)
+        main.cpp)
 
 if (UNIX)
     set(SFML_ROOT ${CMAKE_SOURCE_DIR}/lib/SFML-2.5.1/unix)
