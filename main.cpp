@@ -13,16 +13,22 @@
 
 #include <cmath>
 
-Vector2f move(float angle, Vector2f pos, Vector2f vel)
+Vector2f transform_point(float angle, float x, float y)
 {
 	sf::Transform rotation;
 	rotation.rotate(angle);
-	sf::Vector2f velosity(vel.x, vel.y);
+	sf::Vector2f velosity(x, y);
 
-	sf::Vector2f step = sf::Vector2f{pos.x, pos.y} + rotation.transformPoint(velosity);
+	sf::Vector2f points = rotation.transformPoint(velosity);
 
-	return {step.x, step.y};
+	return {points.x, points.y};
 }
+
+Vector2f transform_point(float angle, Vector2f points)
+{
+	return transform_point(angle, points.x, points.y);
+}
+
 
 int main()
 {
@@ -72,17 +78,31 @@ int main()
 		score.set_color(ColorDef::RED);
 	}
 
-	Text buttonNew = score;
-	buttonNew.set_text("New");
-	buttonNew.set_position((windowSize.x / 2) ,
-							((windowSize.y / 2) - buttonNew.get_global_bounds().height));
+	Sprite buttonNew = Sprite(resources.get_resources("Play"));
+	{
+		buttonNew.set_scale(1.5f, 1.5f);
 
-	Text buttonExit = buttonNew;
-	buttonExit.set_text("Exit");
-	buttonExit.set_position((windowSize.x / 2) ,
-							((windowSize.y / 2) + buttonExit.get_global_bounds().height));
+		RectF bounds = buttonNew.get_global_bounds();
 
-	Text timerStat = buttonExit;
+		float x = (windowSize.x / 2) - (bounds.width / 2);
+		float y = (windowSize.y / 2) - (bounds.height);
+
+		buttonNew.set_position(x, y);
+	}
+
+	Sprite buttonExit = Sprite(resources.get_resources("Exit"));
+	{
+		buttonExit.set_scale(1.5f, 1.5f);
+
+		RectF bounds = buttonExit.get_global_bounds();
+
+		float x = (windowSize.x / 2) - (bounds.width / 2);
+		float y = (windowSize.y / 2) + (bounds.height);
+
+		buttonExit.set_position(x, y);
+	}
+
+	Text timerStat = score;
 
 	Sprite timerIcon = Sprite( resources.get_resources("Clock"));
 	timerIcon.set_scale(0.2, 0.2);
@@ -159,11 +179,9 @@ int main()
 				}
 				else
 				{
-					Vector2f pos = cannonBall->sprite->get_position();
 					float angle = (gun.angle - 180) + 45;
-					Vector2f coord = move(angle, pos, Vector2f{2.f, 2.f});
 
-					cannonBall->sprite->set_position(coord);
+					cannonBall->sprite->move(transform_point(angle, 2.f, 2.f));
 				}
 			};
 
@@ -197,6 +215,16 @@ int main()
 				Vector2f coords = window.map_pixel_to_coord(event.mouseMove.x, event.mouseMove.y);
 
 				mouse_move(coords);
+
+				if(buttonNew.intersect(coords))
+					buttonNew.set_scale(2.5f, 2.5f);
+				else
+					buttonNew.set_scale(1.5f, 1.5f);
+
+				if(buttonExit.intersect(coords))
+					buttonExit.set_scale(2.5f, 2.5f);
+				else
+					buttonExit.set_scale(1.5f, 1.5f);
 			}
 
 			if(event.type == sf::Event::MouseButtonPressed)
@@ -294,12 +322,10 @@ int main()
 
 							Vector2f pos = cannon.get_position();
 							float angle = (cannon.get_rotation() - 180) + 45;
-							Vector2f coord = move(angle, pos,
-													Vector2f{boundCannon.height / 2,
-																boundCannon.height / 2});
+							Vector2f points = transform_point(angle, (boundCannon.height / 2), (boundCannon.height / 2));
 
-							cannonBall.sprite->set_position(coord.x - (bound.width / 2),
-															coord.y - (bound.height / 2));
+							cannonBall.sprite->set_position((pos.x + points.x) - (bound.width / 2),
+															(pos.y + points.y) - (bound.height / 2));
 
 							gun.angle = cannon.get_rotation();
 							gun.cannonBall = &cannonBall;
@@ -344,9 +370,9 @@ int main()
 
 		window.clear();
 		window.draw(background);
-		window.draw(aim);
 		window.draw(buttonNew);
 		window.draw(buttonExit);
+		window.draw(aim);
 		window.display();
 
 	}
