@@ -3,12 +3,12 @@
 
 #include "../types.hpp"
 
-#include <unordered_map>
+#include <vector>
 
 class TypeScore
 {
     private:
-        std::unordered_map<TYPE, int> _score;
+        std::vector<std::pair<TYPE, int>> _score;
 
     public:
 		void add_score_for_type(TYPE type, int score) noexcept;
